@@ -5,9 +5,7 @@ namespace Selenium_Web_Testing_Sauce_Demo.Tests
     public class FrameWorkTesting
     {
         // Git Commit Message:
-        //  - Updated Typora and Created headers for Web UI Testing Projects and Sauce Demo.
-        //  - Created the WebManager Class, ConfigReader, DriverConfig, the LoginPage Class and started the InventoryPage Class.
-        //  - Create a Test to check the Framework is working correctly.
+        //  - Created the A-Z and Z-A Filter Checks.
 
         private readonly WebManager<ChromeDriver> _webManager = new WebManager<ChromeDriver>();
 
@@ -21,8 +19,6 @@ namespace Selenium_Web_Testing_Sauce_Demo.Tests
         public void OneTimeSetUp()
         {
             _webManager.LoginPage.NavigateToLoginPage();
-            // Wait for Login Page to load
-            Thread.Sleep(2000);
         }
 
         [Test]
@@ -30,10 +26,15 @@ namespace Selenium_Web_Testing_Sauce_Demo.Tests
         {
             _webManager.LoginPage.LoginUser(standardUser, password);
 
-            // Wait for Inventory Page to load
+            Thread.Sleep(2000);
+            //_webManager.InventoryPage.WaitForPageToDisplay(); // does not seem to work.
+
+            Assert.That(_webManager.InventoryPage.GetInventoryTitle(), Is.EqualTo("Products")); // Title Class seems to Capitalise all letters.
+
             Thread.Sleep(2000);
 
-            Assert.That(_webManager.InventoryPage.GetInventoryTitle(), Is.EqualTo("PRODUCTS")); // Title Class seems to Capitalise all letters.
+            Assert.That(_webManager.InventoryPage.FilterProductsFromAToZ(), Is.EqualTo(_webManager.InventoryPage.GetAToZProductNames()));
+            //Assert.That(_webManager.InventoryPage.FilterProductsFromZToA(), Is.EqualTo(_webManager.InventoryPage.GetZToAProductNames()));
         }
 
         [OneTimeTearDown]
