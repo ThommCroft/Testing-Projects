@@ -75,7 +75,6 @@ namespace Selenium_Web_Testing_Sauce_Demo.Pages
             List<string> actualProductNames = new List<string>();
             IList<IWebElement> orderedProducts = _driver.FindElements(By.ClassName("inventory_item"));
 
-            // Compare the Original List of Products is different to the new Order.
             foreach (var product in orderedProducts)
             {
                 actualProductNames.Add(product.FindElement(By.ClassName("inventory_item_name")).Text);
@@ -96,13 +95,108 @@ namespace Selenium_Web_Testing_Sauce_Demo.Pages
             List<string> actualProductNames = new List<string>();
             IList<IWebElement> orderedProducts = _driver.FindElements(By.ClassName("inventory_item"));
 
-            // Compare the Original List of Products is different to the new Order.
             foreach (var product in orderedProducts)
             {
                 actualProductNames.Add(product.FindElement(By.ClassName("inventory_item_name")).Text);
             }
 
             return actualProductNames;
+        }
+
+        public List<double> GetLowToHighPrice()
+        {
+            List<double> productPrices = new List<double>();
+            ConvertToDouble(productPrices);
+
+            productPrices.Sort();
+
+            return productPrices;
+        }
+
+        public List<double> GetHighToLowPrice()
+        {
+            List<double> productPrices = new List<double>();
+            ConvertToDouble(productPrices);
+
+            productPrices.Sort(new SortIntDescending());
+
+            return productPrices;
+        }
+
+        public List<double> FilterProductsFromLowestToHighest()
+        {
+            _filterButton.Click();
+
+            // Possible Wait
+            Thread.Sleep(1000);
+
+            _lowHighFilter.Click();
+
+            List<double> productPrices = new List<double>();
+            ConvertToDouble(productPrices);
+
+            return productPrices;
+        }
+
+        public List<double> FilterProductsFromHighestToLowest()
+        {
+            _filterButton.Click();
+
+            // Possible Wait
+            Thread.Sleep(1000);
+
+            _highLowFilter.Click();
+
+            List<double> productPrices = new List<double>();
+            ConvertToDouble(productPrices);
+
+            return productPrices;
+        }
+
+        private void ConvertToDouble(List<double> productPrices)
+        {
+            List<string> originalProductOrderNames = new List<string>();
+
+            string stringToSplit = string.Empty;
+
+            foreach (var product in _products)
+            {
+                originalProductOrderNames.Add(product.FindElement(By.ClassName("inventory_item_price")).Text);
+            }
+
+            for (int i = 0; i < originalProductOrderNames.Count(); i++)
+            {
+                stringToSplit += originalProductOrderNames[i];
+            }
+
+            string[] splitArray = stringToSplit.Split('$');
+
+            for (int i = 0; i < splitArray.Length; i++)
+            {
+                if (splitArray[i] != "")
+                {
+                    productPrices.Add(double.Parse(splitArray[i]));
+                }
+            }
+        }
+
+        public class SortIntDescending : IComparer<double>
+        {
+            public int Compare(double a, double b)
+            {
+                if (a > b)
+                {
+                    return -1;
+                }
+                else if (a < b)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
         }
     }
 }
